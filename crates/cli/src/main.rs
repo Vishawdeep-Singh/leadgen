@@ -1,3 +1,5 @@
+mod progress;
+
 use std::num::NonZeroUsize;
 use std::path::PathBuf;
 use std::time::Duration;
@@ -6,6 +8,7 @@ use anyhow::{Context, Result, bail};
 use clap::Parser;
 use leadgen_core::export;
 use leadgen_core::google_maps::{Config, SearchJob, run};
+use progress::Bars;
 
 /// Scrape business leads from Google Maps into a CSV file.
 #[derive(Debug, Parser)]
@@ -101,9 +104,20 @@ async fn main() -> Result<()> {
         config.concurrency
     );
 
-    let businesses = run(jobs, &config).await?;
-    export::save_to_csv(&businesses, &args.output)?;
-    println!("\n✅ Total prospects scraped: {}", businesses.len());
+    let outcome = run(jobs, &config, &Bars::new()).await?;
+
+    // Save first: even a blocked run keeps what it scraped before the block.
+    export::save_to_csv(&outcome.businesses, &args.output)?;
+    println!(
+        "\n💾 Saved {} leads to {}",
+        outcome.businesses.len(),
+        args.output.display()
+    );
+
+    if outcome.blocked {
+        // Exit code 1, so cron or monitoring notices the run was cut short.
+        bail!("Google blocked the run before it finished");
+    }
     Ok(())
 }
 

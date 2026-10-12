@@ -18,7 +18,6 @@ pub fn save_to_csv(businesses: &[Business], path: &Path) -> Result<()> {
     }
 
     writer.flush()?;
-    println!("💾 Saved leads to {}", path.display());
     Ok(())
 }
 
