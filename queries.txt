@@ -1,0 +1,6 @@
+# One search per line. Use with: leadgen -f queries.txt -l toronto
+kitchen remodeling
+home renovation
+washing machine repair
+appliance repair
+bathroom remodeling

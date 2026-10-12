@@ -1,0 +1,17 @@
+# Build output
+/target
+
+# Scraped leads (personal business data; never commit)
+*.csv
+# ...except small hand-made test fixtures
+!crates/**/tests/fixtures/*.csv
+
+# Local secrets and logs
+.env
+*.log
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
